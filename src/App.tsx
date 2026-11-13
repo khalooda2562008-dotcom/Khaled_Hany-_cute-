@@ -472,7 +472,7 @@ function App() {
       if (operation.type === 'dynamic_cut') next.clips = next.clips.map(c => ({ ...c, speed: Math.min(1.5, Math.max(c.speed, Number(operation.value ?? 1.05))) }));
     }
     commit(next); setPlan(null); setPanel('editor'); setStatus('تم تطبيق الإعدادات المدعومة على المشروع');
-    if (operations.some(op => op.type === 'remove_silence')) await runSilenceDetection();
+    if (operations.some(op => op.type === 'remove_silence')) { await runSilenceDetection(); setPanel('audio'); }
   };
 
   const startExport = async () => {
@@ -644,8 +644,17 @@ function App() {
               <div className="setting-row"><div><strong>إزالة الترددات المنخفضة</strong><small>High-pass عند 80Hz لتقليل الرجة والطنين</small></div><button className={`toggle ${project?.audio.highpass ? 'on' : ''}`} onClick={() => updateAudio({ highpass: !project?.audio.highpass })}><i /></button></div>
               <div className="control-group full"><div className="control-label"><label>مستوى الصوت العام</label><strong>{Math.round((project?.audio.gain ?? 1) * 100)}%</strong></div><input type="range" min="0" max="2" step="0.05" value={project?.audio.gain ?? 1} onChange={e => updateAudio({ gain: Number(e.target.value) })} /></div>
             </div>
-            <div className="info-note"><ShieldCheck size={17} /><span>تظل ملفات الصوت الأصلية دون تغيير. الإعدادات تطبق على ناتج التصدير فقط.</span></div>
-          </section>
+            <div className="tool-card">
+              <div className="tool-card-title"><div className="tool-icon violet"><Scissors size={19} /></div><div><h3>قص الصمت التلقائي</h3><p>FFmpeg يحلل الصوت على جهازك، ثم تقص الفواصل بضغطة مع هامش يحمي الكلام.</p></div></div>
+              <div className="control-group full"><div className="control-label"><label>أقل مدة صمت (ثانية)</label><strong>{silenceThreshold.toFixed(1)}</strong></div><input type="range" min="0.5" max="3" step="0.1" value={silenceThreshold} onChange={e => setSilenceThreshold(Number(e.target.value))} /></div>
+              <div className="cloud-actions">
+                <button className="primary-button" disabled={!activeClip || busy} onClick={runSilenceDetection}><Scissors size={15} /> تحليل الصمت</button>
+                {silenceRanges.length > 0 && <button className="secondary-button" onClick={applySilenceCuts}>تطبيق القص ({silenceRanges.length} فاصل)</button>}
+                {silenceRanges.length > 0 && <button className="text-action" onClick={() => setSilenceRanges([])}>إلغاء المقترحات</button>}
+              </div>
+              {silenceRanges.length > 0 && <div className="cloud-object-list">{silenceRanges.map((range, index) => <div key={`${range.start}-${index}`}><span><strong>{formatTime(range.start)} ← {formatTime(range.end)}</strong><small>صمت {range.duration.toFixed(1)} ثانية</small></span></div>)}</div>}
+            </div>
+            <div className="info-note"><ShieldCheck size={17} /><span>تظل ملفات الصوت الأصلية دون تغيير. الإعدادات تطبق على ناتج التصدير فقط.</span></div>          </section>
         )}
 
         {panel === 'color' && (
