@@ -1,0 +1,25 @@
+# Local-only configuration: `npx wrangler dev -c wrangler.dev.toml --port 8787`
+# Uses simulated R2/D1 (Miniflare) and a local-only identity (worker/dev.ts).
+# Never deployed. Production uses wrangler.toml + worker/index.ts (Cloudflare Access).
+name = "khaled-cut-ai-local"
+main = "worker/dev.ts"
+compatibility_date = "2026-11-01"
+
+[assets]
+directory = "./dist"
+binding = "ASSETS"
+
+[[r2_buckets]]
+binding = "MEDIA"
+bucket_name = "khaled-cut-ai-local"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "khaled-cut-ai-meta"
+database_id = "local-development"
+
+[vars]
+ENVIRONMENT = "local"
+STORAGE_QUOTA_BYTES = "10000000000"
+MAX_UPLOAD_BYTES = "20971520"
+MAX_PART_BYTES = "26214400"

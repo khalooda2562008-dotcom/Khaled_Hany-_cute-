@@ -1,0 +1,42 @@
+name = "khaled-cut-ai"
+main = "worker/index.ts"
+compatibility_date = "2026-11-01"
+compatibility_flags = ["nodejs_compat"]
+upload_source_maps = true
+preview_urls = false
+
+# Static build output is served by the Worker's ASSETS binding.
+# The SPA fallback keeps client-side routes working, while /api/* always
+# goes to the Worker first.
+[assets]
+directory = "./dist"
+binding = "ASSETS"
+not_found_handling = "single-page-application"
+run_worker_first = ["/api/*"]
+
+# D1 stores project *metadata only* (no video binaries). Free tier.
+[[d1_databases]]
+binding = "DB"
+database_name = "khaled-cut-ai-meta"
+database_id = "b626ffe4-a71e-4378-9e43-b9aaa3b39beb"
+
+# R2 is OPTIONAL and is intentionally NOT bound yet: this account has no R2
+# subscription, and enabling it requires a dashboard opt-in (possibly a card).
+# Storage endpoints answer 503 "R2 not configured" until a bucket exists.
+# After enabling R2, bind it here:
+# [[r2_buckets]]
+# binding = "MEDIA"
+# bucket_name = "khaled-cut-ai-media"
+
+[vars]
+ENVIRONMENT = "production"
+STORAGE_QUOTA_BYTES = "10000000000"
+MAX_UPLOAD_BYTES = "21474836480"
+MAX_PART_BYTES = "26214400"
+
+# Secrets (set with `npx wrangler secret put`, never in the frontend):
+# CF_ACCESS_TEAM_DOMAIN, CF_ACCESS_AUD   -> enables /api/storage/* and /api/projects/*
+# TURNSTILE_SECRET                       -> optional, enables the Turnstile gate
+
+[observability]
+enabled = true
