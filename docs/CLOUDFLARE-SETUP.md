@@ -10,8 +10,10 @@ method for this project, and do not switch on paid add-ons.
 - D1 `khaled-cut-ai-meta` exists (`b626ffe4-a71e-4378-9e43-b9aaa3b39beb`), migrated.
 - Zone `khaledbadawy.com` is on the **Free Website** plan.
 - No Pages project, no Turnstile widget, no R2 bucket yet.
-- R2 is **not enabled**: `code: 10042 — Please enable R2 through the Cloudflare Dashboard`.
-- Cloudflare Access is **not enabled** for this account (`access.api.error.not_enabled`).
+- R2 is **not enabled**: `code: 10042`; the dashboard R2 route is unavailable until the
+  account subscribes, and the activation form asks for a card.
+- Cloudflare Access is **not enabled** (`access.api.error.not_enabled`): the Free Zero Trust
+  activation form asks for card details to authorize overage charges. Skipped by policy.
 
 ## Deploy the Worker (app + API)
 
@@ -33,9 +35,13 @@ npx wrangler deploy
 - `[observability] enabled = true` → free Worker logs/metrics.
 - R2 binding **commented out** until the bucket exists.
 
-## Protect the API with Cloudflare Access (free)
+## Protect the API with Cloudflare Access
 
-1. Dashboard → Zero Trust → Settings → enable **Free** plan (no card).
+> Blocked on this account: the Free Zero Trust activation form asks for a card. Do this only
+> if the owner chooses to add one; the code is ready and needs no changes.
+
+1. Dashboard → Zero Trust → Settings → **Free** plan (50 seats, $0/seat — but the form asks
+   for a payment method for overages).
 2. Access → Applications → *Add an application* → **Self-hosted**:
    - Domain: `khaled-cut-ai.khaledbadawy.workers.dev`
    - Path: `api` (protects `/api/*`)

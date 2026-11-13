@@ -11,7 +11,7 @@ Everything below was checked on this account on 2026-11-13 (Cloudflare account
 | **GitHub** | Source of truth | Yes, repo `Khaled_Hany-_cute-` | Yes | No | — | **Pushed** to `main` (`41d48a4`). CI file is prepared but cannot be pushed without the `workflow` scope. |
 | **Cloudflare Workers** | `/api/*` API (auth, uploads, metadata) | Yes, Worker `khaled-cut-ai` deployed | Yes (Free plan) | No | 100k requests/day | **Live** at `https://khaled-cut-ai.khaledbadawy.workers.dev`; `/api/health` reports `staticAssets: true`, `d1: true`, `access: false`, `r2: false`. |
 | **Workers Static Assets** | Serves the built app + SPA fallback | Yes | Yes (free, unlimited static requests) | No | — | **Live**: 13 assets uploaded; `/` and `/editor` return the SPA (200), `manifest.webmanifest` and `sw.js` served, CSP/HSTS applied via `public/_headers`. |
-| **R2** | Optional private backup of source media | **No** — API returns `code: 10042 Please enable R2 through the Cloudflare Dashboard` | Yes up to allowance | Dashboard opt-in; may ask for a payment method | 10 GB-month, 1M Class A, 10M Class B, free egress | **Skipped** (no-card rule). Multipart API is implemented + tested and answers `503 R2 not configured` until a bucket is bound. |
+| **R2** | Optional private backup of source media | **No** — API returns `code: 10042`; the R2 dashboard route 404s until the account subscribes | Yes up to allowance | **Yes: card required to activate R2** | 10 GB-month, 1M Class A, 10M Class B, free egress | **Skipped** (no-card rule, verified in the dashboard). Multipart API is implemented + tested and answers `503 R2 not configured` until a bucket is bound. |
 | **D1** | Project **metadata** only (never video) | Yes, `khaled-cut-ai-meta` created (region EEUR) | Yes | No | 5 GB storage, 5M rows read/day | **Created + migrated**; insert/select/delete verified remotely. ID `b626ffe4-a71e-4378-9e43-b9aaa3b39beb`. `/api/projects` stays 503 until Access is on. |
 | **FFmpeg.wasm** | All editing/rendering on device | — | Yes (loaded from unpkg, cached by the service worker) | No | RAM of the phone | Implemented: silence detect, filters, MP4 export. Core is cached by the service worker. Device test pending. |
 | **WebCodecs** | Optional hardware acceleration signal | Browser-dependent | Yes | No | — | Runtime detection + Arabic fallback message in the UI. FFmpeg.wasm stays the reliable path. |
@@ -34,8 +34,11 @@ Everything below was checked on this account on 2026-11-13 (Cloudflare account
 
 ## Deliberately not enabled
 
-- **R2**: account-level opt-in required; the project rule forbids card entry. The code path
-  exists and is tested with a fake bucket, and it refuses to pretend storage works.
+- **R2**: the dashboard requires a card to activate R2, so the project rule forbids it. The
+  code path exists and is tested with a fake bucket, and it refuses to pretend storage works.
+- **Cloudflare Access**: the Free Zero Trust plan also ends in a card form ("authorize charges
+  for usage above the free limits"), so it was left un-activated. `/api/*` therefore stays 503;
+  the app works fully locally. If a card is added later, the steps are in CLOUDFLARE-SETUP.md.
 - **Web Analytics**: needs a dashboard opt-in/zone; the current API token cannot create it.
 - **Any paid plan, paid AI API, remote renderer, or extra SaaS**: not used.
 
