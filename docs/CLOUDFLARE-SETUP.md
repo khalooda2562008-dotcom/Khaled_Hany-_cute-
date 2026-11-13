@@ -6,13 +6,16 @@ method for this project, and do not switch on paid add-ons.
 ## Current account facts (checked 2026-11-13)
 
 - Account: `9fda9a2e…ef71`, workers.dev subdomain `khaledbadawy`.
-- Worker `khaled-cut-ai` already exists (created 2026-11-12).
+- Worker `khaled-cut-ai` is deployed at https://khaled-cut-ai.khaledbadawy.workers.dev.
+- D1 `khaled-cut-ai-meta` exists (`b626ffe4-a71e-4378-9e43-b9aaa3b39beb`), migrated.
 - Zone `khaledbadawy.com` is on the **Free Website** plan.
-- No D1 database, no Pages project, no Turnstile widget, no R2 bucket yet.
+- No Pages project, no Turnstile widget, no R2 bucket yet.
 - R2 is **not enabled**: `code: 10042 — Please enable R2 through the Cloudflare Dashboard`.
 - Cloudflare Access is **not enabled** for this account (`access.api.error.not_enabled`).
 
 ## Deploy the Worker (app + API)
+
+Already done for this account (kept for reference / a fresh account):
 
 ```bash
 npx wrangler d1 create khaled-cut-ai-meta      # free
